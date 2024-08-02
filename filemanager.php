@@ -94,7 +94,18 @@ $items = scandir($path);
 
 echo '<h2>File Manager</h2>';
 echo '<a href="?logout=1">Logout</a>';
-echo '<h3>Current Path: ' . $path . '</h3>';
+
+// Breadcrumb navigation
+$breadcrumbs = explode(DIRECTORY_SEPARATOR, str_replace(FM_ROOT_PATH, '', $path));
+echo '<h3>Current Path: ';
+echo '<a href="?path=">Root</a> / ';
+$breadcrumbPath = '';
+foreach ($breadcrumbs as $crumb) {
+    if ($crumb == '') continue;
+    $breadcrumbPath .= DIRECTORY_SEPARATOR . $crumb;
+    echo '<a href="?path=' . urlencode($breadcrumbPath) . '">' . htmlspecialchars($crumb) . '</a> / ';
+}
+echo '</h3>';
 
 // Display files and directories
 echo '<ul>';
