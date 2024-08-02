@@ -29,7 +29,7 @@ if (!isset($_SESSION['authenticated'])) {
     exit();
 }
 
-// Get current path
+// Get the current path or default to the document root
 $path = isset($_GET['path']) ? $_GET['path'] : FM_ROOT_PATH;
 $path = realpath($path);
 
@@ -101,6 +101,7 @@ echo '<a href="?logout=1">Logout</a>';
 $breadcrumbs = explode(DIRECTORY_SEPARATOR, str_replace(FM_ROOT_PATH, '', $path));
 echo '<h3>Current Path: ';
 echo '<a href="?path=' . urlencode(FM_ROOT_PATH) . '">Root</a>'; // Link to document root
+$breadcrumbPath = FM_ROOT_PATH;
 foreach ($breadcrumbs as $crumb) {
     if ($crumb == '') continue;
     $breadcrumbPath .= DIRECTORY_SEPARATOR . $crumb;
