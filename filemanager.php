@@ -3,7 +3,7 @@
 session_start();
 
 // Define the root directory for the file manager
-define('FM_ROOT_PATH', __DIR__);
+define('FM_ROOT_PATH', $_SERVER['DOCUMENT_ROOT']); // Set to document root
 define('PASSWORD', 'password'); // Set a password for authentication
 
 // Handle login/logout (basic session-based authentication)
@@ -14,7 +14,7 @@ if (isset($_POST['logout'])) {
 }
 
 if (isset($_POST['login'])) {
-    if ($_POST['password'] === PASSWORD) { 
+    if ($_POST['password'] === PASSWORD) {
         $_SESSION['authenticated'] = true;
     } else {
         echo "<script>alert('Invalid Password');</script>";
@@ -29,8 +29,9 @@ if (!isset($_SESSION['authenticated'])) {
     exit();
 }
 
-$path = isset($_GET['path']) ? $_GET['path'] : '.';
-$path = realpath(FM_ROOT_PATH . DIRECTORY_SEPARATOR . $path);
+// Get current path
+$path = isset($_GET['path']) ? $_GET['path'] : FM_ROOT_PATH;
+$path = realpath($path);
 
 if (strpos($path, FM_ROOT_PATH) !== 0) {
     die('Access denied');
@@ -92,18 +93,18 @@ if (isset($_POST['edit_file'])) {
 
 $items = scandir($path);
 
+// Display the interface
 echo '<h2>File Manager</h2>';
 echo '<a href="?logout=1">Logout</a>';
 
 // Breadcrumb navigation
 $breadcrumbs = explode(DIRECTORY_SEPARATOR, str_replace(FM_ROOT_PATH, '', $path));
 echo '<h3>Current Path: ';
-echo '<a href="?path=">Root</a> / ';
-$breadcrumbPath = '';
+echo '<a href="?path=' . urlencode(FM_ROOT_PATH) . '">Root</a>'; // Link to document root
 foreach ($breadcrumbs as $crumb) {
     if ($crumb == '') continue;
     $breadcrumbPath .= DIRECTORY_SEPARATOR . $crumb;
-    echo '<a href="?path=' . urlencode($breadcrumbPath) . '">' . htmlspecialchars($crumb) . '</a> / ';
+    echo ' / <a href="?path=' . urlencode($breadcrumbPath) . '">' . htmlspecialchars($crumb) . '</a>';
 }
 echo '</h3>';
 
